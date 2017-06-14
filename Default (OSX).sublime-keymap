@@ -1,0 +1,7 @@
+[
+    { "keys": ["alt+space"], "command": "vulhint_goto_next" },
+    { "keys": ["control+1"], "command": "vulhint_debug" },
+    { "keys": ["control+e"], "command": "vulhint_enable" },
+    { "keys": ["control+d"], "command": "vulhint_disable" },
+    { "keys": ["control+c"], "command": "vulhint_clear" }
+]

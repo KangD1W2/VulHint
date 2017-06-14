@@ -1,10 +1,25 @@
 # VulHint
 
+## Fork from https://github.com/5alt/VulHint
+
 VulHint 是一款 sublime text 3 的代码审计插件。
 
 插件包含一些预置的正则规则和提示的内容，在当前文本中匹配到代码的时候，会加框显示，鼠标移动到危险函数的时候，会展示提示信息。
 
 在代码审计的时候，本插件可以针对相关知识点做出提醒。
+
+## Install
+
+    cd /path/to/sublime/Packages/
+    git clone https://github.com/virink/VulHint.git
+
+## Menu (keymap for OSX)
+
+- Tools -> VulHint
+    + Enable ^E 
+    + Disanable ^D
+    + Clear ^C
+    + Debug(for dev) ^1
 
 ## 漏洞提示
 
@@ -14,13 +29,13 @@ VulHint 是一款 sublime text 3 的代码审计插件。
 
 ## 数据扩展
 
-`VulData.sublime-settings` 中存放了相关的规则数据，可以方便的自行添加。
+`VulData.json` 中存放了相关的规则数据，可以方便的自行添加。
 
 语言类型按照文件后缀名判断。每种语言类型下有不同的规则。
 
 规则的格式为。
 ```
-"rule_name": {"keyword":[], "discription": "test", "pattern": "regexp", bbais, ebias}
+"rule_name": {"keyword":[], "discription": "test", "pattern": "regexp", "abais":0, "ebias":0, "enable":1}
 ```
 
 其中
@@ -39,19 +54,29 @@ MIT
 
 ## 联系
 
-http://5alt.me
+### 5alt
 
-md5_salt [AT] qq.com
+Blog : http://5alt.me
+
+Email : md5_salt [AT] qq.com
+
+### Virink
+
+Blog : https://www.virzz.com
+
+Telegrame : https://t.me/virink
+
+Email : virink [AT] outlook.com
 
 ## 参考资料
 
-Seay代码审计系统
+>Seay代码审计系统
 
-https://www.sublimetext.com/docs/3/api_reference.html
+>https://www.sublimetext.com/docs/3/api_reference.html
 
-https://cnpagency.com/blog/creating-sublime-text-3-plugins-part-1/
+>https://cnpagency.com/blog/creating-sublime-text-3-plugins-part-1/
 
-https://github.com/bradrobertson/sublime-packages
+>https://github.com/bradrobertson/sublime-packages
 
-http://zxhfighter.github.io/blog/javascript/2013/07/30/sublime-plugin.html
+>http://zxhfighter.github.io/blog/javascript/2013/07/30/sublime-plugin.html
 

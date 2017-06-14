@@ -1,21 +1,30 @@
 [
-{
-    "id" : "VulHint",
-    "caption": "VulHint",
-    "children":
-    [
-    {
-        "caption" : "enable",
-        "command" : "enable"
-    },
-    {
-        "caption" : "disable",
-        "command" : "disable"
-    },
-    {
-        "caption" : "clear",
-        "command" : "clear"
-    }
+  {
+    "id": "tools",
+    "children": [
+        {
+            "id" : "vulhint",
+            "caption": "VulHint",
+            "children":
+            [
+                {
+                    "caption" : "Enable",
+                    "command" : "vulhint_enable"
+                },
+                {
+                    "caption" : "Disable",
+                    "command" : "vulhint_disable"
+                },
+                {
+                    "caption" : "Clear",
+                    "command" : "vulhint_clear"
+                },
+                {
+                    "caption" : "Debug",
+                    "command" : "vulhint_debug"
+                }
+            ]
+        }
     ]
-}
+  }
 ]
