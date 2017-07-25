@@ -17,7 +17,7 @@ g_line_regions = {}
 
 def debug_print(var):
     if sublime.load_settings(__SETTINGS__).get("debug", 0):
-        print("="*10+" DEBUG VulHint "+"="*10)
+        print("=" * 10 + " DEBUG VulHint " + "=" * 10)
         print(var)
 
 
@@ -87,7 +87,7 @@ class Vulhint(sublime_plugin.EventListener):
         g_regions = []
         self.lang = self.guess_lang(view)
         self.data = sublime.load_settings("VulData.json").get(self.lang, {})
-        debug_print("Language : "+self.lang)
+        debug_print("Language : " + self.lang)
         debug_print(self.data)
 
     def mark_vul(self, view):
@@ -97,7 +97,7 @@ class Vulhint(sublime_plugin.EventListener):
         for key, val in self.data.items():
             if not val['enable']:
                 continue
-            vul = view.find_all(val['pattern'])
+            vul = view.find_all(val['pattern'], flags=re.IGNORECASE)
             if not vul:
                 continue
             for i in vul:
@@ -160,7 +160,7 @@ class VulhintGotoNextCommand(sublime_plugin.TextCommand):
 class VulhintEnableCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        debug_print('VulhintEnableCommand')
+        debug_print('Vulhint Enable Command')
         sublime.load_settings(__SETTINGS__).set("enable", 1)
         sublime.save_settings(__SETTINGS__)
 
@@ -168,22 +168,27 @@ class VulhintEnableCommand(sublime_plugin.TextCommand):
 class VulhintDisableCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        debug_print('VulhintDisableCommand')
+        debug_print('Vulhint Disable Command')
         sublime.load_settings(__SETTINGS__).set("enable", 0)
         sublime.save_settings(__SETTINGS__)
+
 
 class VulhintDebugCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        debug_print('VulhintDebugCommand')
+        debug_print('Vulhint Debug Command')
         setting = sublime.load_settings(__SETTINGS__)
-        status = int(setting.get("debug",0))
-        setting.set("debug", (status+1) % 2)
+        status = int(setting.get("debug", 0))
+        if status:
+            debug_print('Disbale Debug Mode')
+        else:
+            debug_print('Enable Debug Mode')
+        setting.set("debug", (status + 1) % 2)
         sublime.save_settings(__SETTINGS__)
 
 
 class VulhintClearCommand(sublime_plugin.TextCommand):
 
     def run(self, edit):
-        debug_print('VulhintClearCommand')
+        debug_print('Vulhint Clear Command')
         clear_mark(self.view)
