@@ -18,10 +18,6 @@
                 {
                     "caption" : "Clear",
                     "command" : "vulhint_clear"
-                },
-                {
-                    "caption" : "Debug",
-                    "command" : "vulhint_debug"
                 }
             ]
         }

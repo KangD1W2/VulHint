@@ -1,13 +1,20 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 __NAME__ = "VulHint"
 __VERSION__ = "0.0.1"
 __CREATOR__ = "md5_salt"
+
 __AUTHOR__ = "Virink"
 __DATA__ = "VulHint.json"
 __SETTINGS__ = "VulHint.sublime-settings"
 
+__DEBUG__ = 1
+
 import sublime
 import sublime_plugin
 import re
+import time
 
 g_regions = []
 g_region_lines = []
@@ -16,14 +23,41 @@ g_line_regions = {}
 
 
 def debug_print(var):
-    if sublime.load_settings(__SETTINGS__).get("debug", 0):
-        print("=" * 10 + " DEBUG VulHint " + "=" * 10)
+    if __DEBUG__:
+        print("===== DEBUG VulHint : %s===== " % str(time.time()))
         print(var)
 
 
 class Vulhint(sublime_plugin.EventListener):
+    """漏洞提示
+
+    Show a tip for code by rules
+
+    Extends:
+        sublime_plugin.EventListener
+
+    Variables:
+        lang {str} -- 语言类型
+        data {dict} -- [description]
+
+        g_regions {list} -- [description]
+        g_line_regions {dict} -- [description]
+        g_region_lines {list} -- [description]
+        g_jump_index {int} -- [description]
+
+    """
+
     lang = None
     data = {}
+
+    def init(self, view):
+        global g_regions
+        clear_mark(view)
+        g_regions = []
+        self.lang = self.guess_lang(view)
+        self.data = sublime.load_settings("VulData.json").get(self.lang, {})
+        debug_print("Language : " + self.lang)
+        # debug_print(self.data)
 
     def on_load_async(self, view):
         debug_print('on_post_save_async')
@@ -81,15 +115,6 @@ class Vulhint(sublime_plugin.EventListener):
 
         return
 
-    def init(self, view):
-        global g_regions
-        clear_mark(view)
-        g_regions = []
-        self.lang = self.guess_lang(view)
-        self.data = sublime.load_settings("VulData.json").get(self.lang, {})
-        debug_print("Language : " + self.lang)
-        debug_print(self.data)
-
     def mark_vul(self, view):
         global g_regions
         if not self.lang or not self.data:
@@ -97,17 +122,42 @@ class Vulhint(sublime_plugin.EventListener):
         for key, val in self.data.items():
             if not val['enable']:
                 continue
-            vul = view.find_all(val['pattern'], flags=re.IGNORECASE)
+            # 处理规则
+            pattern = val['pattern']
+            pattern_1 = pattern
+            pattern_2 = None
+            if isinstance(pattern, list):
+                pattern_1 = pattern[0]
+                if len(pattern) > 2:
+                    pattern_2 = pattern[1]
+            # 通过正则表达式匹配漏洞
+            vul = view.find_all(pattern_1, flags=re.IGNORECASE)
             if not vul:
                 continue
-            for i in vul:
-                i.a += val["abais"]
-                i.b += val["bbais"]
+            # 移除标志过的
+            vul = [
+                v for v in vul if '/*vvv*/' not in view.substr(view.line(v))]
+            # TODO 二次判断
+            # if pattern_2:
+            #     _vul = re.findall(pattern_2, vul_str, flags=re.IGNORECASE)
+            #     debug_print(_vul)
+            #     if not _vul:
+            #         continue
             view.add_regions(key, vul, "string", "cross",
                              sublime.DRAW_OUTLINED | sublime.DRAW_STIPPLED_UNDERLINE)
             g_regions.append(key)
 
     def guess_lang(self, view=None, path=None, sublime_scope=None):
+        """根据后缀猜测语言类型
+
+        Keyword Arguments:
+            view {[type]} -- [description] (default: {None})
+            path {[type]} -- [description] (default: {None})
+            sublime_scope {[type]} -- [description] (default: {None})
+
+        Returns:
+            [str] -- 语言类型
+        """
         if not view:
             return None
         filename = view.file_name()
@@ -141,6 +191,13 @@ def get_lines(view):
 
 
 class VulhintGotoNextCommand(sublime_plugin.TextCommand):
+    """GotoNext VulHint Command
+
+    跳的下一个
+
+    Extends:
+        sublime_plugin.TextCommand
+    """
 
     def run(self, edit):
         global g_jump_index, g_region_lines
@@ -158,36 +215,34 @@ class VulhintGotoNextCommand(sublime_plugin.TextCommand):
 
 
 class VulhintEnableCommand(sublime_plugin.TextCommand):
+    """Enable VulHint Command
 
-    def run(self, edit):
-        debug_print('Vulhint Enable Command')
-        sublime.load_settings(__SETTINGS__).set("enable", 1)
-        sublime.save_settings(__SETTINGS__)
+    开启VulHint
 
-
-class VulhintDisableCommand(sublime_plugin.TextCommand):
+    Extends:
+        sublime_plugin.TextCommand
+    """
 
     def run(self, edit):
         debug_print('Vulhint Disable Command')
-        sublime.load_settings(__SETTINGS__).set("enable", 0)
-        sublime.save_settings(__SETTINGS__)
-
-
-class VulhintDebugCommand(sublime_plugin.TextCommand):
-
-    def run(self, edit):
-        debug_print('Vulhint Debug Command')
         setting = sublime.load_settings(__SETTINGS__)
-        status = int(setting.get("debug", 0))
+        status = int(setting.get("enable", 0))
         if status:
-            debug_print('Disbale Debug Mode')
+            debug_print('Disbale Vulhint')
         else:
-            debug_print('Enable Debug Mode')
-        setting.set("debug", (status + 1) % 2)
+            debug_print('Enable Vulhint')
+        setting.set("enable", (status + 1) % 2)
         sublime.save_settings(__SETTINGS__)
 
 
 class VulhintClearCommand(sublime_plugin.TextCommand):
+    """Clear VulHint Command
+
+    清空 VulHint
+
+    Extends:
+        sublime_plugin.TextCommand
+    """
 
     def run(self, edit):
         debug_print('Vulhint Clear Command')

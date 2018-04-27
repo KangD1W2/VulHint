@@ -8,12 +8,8 @@
         "command": "vulhint_debug"
     },
     {
-        "keys": ["control+e"],
+        "keys": ["control+2"],
         "command": "vulhint_enable"
-    },
-    {
-        "keys": ["control+d"],
-        "command": "vulhint_disable"
     },
     {
         "keys": ["control+c"],
