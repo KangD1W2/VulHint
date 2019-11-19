@@ -1,0 +1,38 @@
+[
+    {
+        "caption": "Vulhint: Vul Find All",
+        "command": "vulhint_find_vul"
+    },
+    {
+        "caption": "Vulhint: Vul Find PHP",
+        "command": "vulhint_find_vul_php"
+    },
+    {
+        "caption": "Vulhint: Vul Find Python",
+        "command": "vulhint_find_vul_py"
+    },
+    {
+        "caption": "Vulhint: Vul Find Javascript",
+        "command": "vulhint_find_vul_js"
+    },
+    {
+        "caption": "Vulhint: Vul Find Java/Jsp",
+        "command": "vulhint_find_vul_java"
+    },
+    {
+        "caption": "Vulhint: Go To Next",
+        "command": "vulhint_goto_next" 
+    },
+    {
+        "caption": "Vulhint: Toggle Debug",
+        "command": "vulhint_debug"
+    },
+    {
+        "caption": "Vulhint: Toggle Enable",
+        "command": "vulhint_enable"
+    },
+    {
+        "caption": "Vulhint: Clear",
+        "command": "vulhint_clear" 
+    }
+]

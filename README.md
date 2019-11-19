@@ -1,7 +1,5 @@
 # VulHint
 
-## Fork from https://github.com/5alt/VulHint
-
 VulHint 是一款 sublime text 3 的代码审计插件。
 
 插件包含一些预置的正则规则和提示的内容，在当前文本中匹配到代码的时候，会加框显示，鼠标移动到危险函数的时候，会展示提示信息。
@@ -10,22 +8,18 @@ VulHint 是一款 sublime text 3 的代码审计插件。
 
 ## Install
 
-    cd /path/to/sublime/Packages/
-    git clone https://github.com/virink/VulHint.git
-
-## Menu (keymap for OSX)
-
-- Tools -> VulHint
-    + Enable ^E 
-    + Disanable ^D
-    + Clear ^C
-    + Debug(for dev) ^1
+    ???
 
 ## 漏洞提示
 
 在编辑器行号前有标记符号，对规则匹配到的部分用方框标出。鼠标移动到该行会有相应提示。如果一行中有多个标记，则所有的提示信息都会出现，鼠标移动到某一个上则只会出现该规则的提示。
 
 `alt+space` 可以切换到下一个提示点。
+
+## 漏洞查找
+
+通过遍历当前文件夹内容匹配规则，展示相关漏洞结果。
+因为sublime text未给出双击跳转 API，所以用快捷命令进行跳转。
 
 ## 数据扩展
 
@@ -35,40 +29,23 @@ VulHint 是一款 sublime text 3 的代码审计插件。
 
 规则的格式为。
 ```
-"rule_name": {"keyword":[], "discription": "test", "pattern": "regexp", "abais":0, "ebias":0, "enable":1}
+"rule_name": {"keyword":[], "discription": "test", "pattern": "regexp", "enable":1}
 ```
 
 其中
+
 * keyword 鼠标悬浮位置
 * discription 悬浮显示内容，html显示
 * pattern 正则表达式
-* abais 开始处偏移
-* bbais 结尾处偏移
 * enable 是否启用该条规则
-
-本插件已经内置了php的一些规则，欢迎大家提交新的规则以及对现有规则进行优化。
 
 ## License
 
-MIT
-
-## 联系
-
-### 5alt
-
-Blog : http://5alt.me
-
-Email : md5_salt [AT] qq.com
-
-### Virink
-
-Blog : https://www.virzz.com
-
-Telegrame : https://t.me/virink
-
-Email : virink [AT] outlook.com
+MIs
 
 ## 参考资料
+
+>[VulHint - By 5alt](https://github.com/5alt/VulHint)
 
 >Seay代码审计系统
 

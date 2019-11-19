@@ -1,26 +1,32 @@
-[
-  {
+[{
     "id": "tools",
-    "children": [
-        {
-            "id" : "vulhint",
-            "caption": "VulHint",
-            "children":
-            [
-                {
-                    "caption" : "Enable",
-                    "command" : "vulhint_enable"
-                },
-                {
-                    "caption" : "Disable",
-                    "command" : "vulhint_disable"
-                },
-                {
-                    "caption" : "Clear",
-                    "command" : "vulhint_clear"
-                }
-            ]
-        }
-    ]
-  }
-]
+    "children": [{
+        "id": "vulhint",
+        "caption": "VulHint",
+        "children": [{
+            "caption": "Find All Vul",
+            "command": "vulhint_find_vul"
+        }, {
+            "caption": "Find PHP Vul",
+            "command": "vulhint_find_vul_php"
+        }, {
+            "caption": "Find Python Vul",
+            "command": "vulhint_find_vul_py"
+        }, {
+            "caption": "Find Java/Jsp Vul",
+            "command": "vulhint_find_vul_java"
+        }, {
+            "caption": "Go To Next",
+            "command": "vulhint_goto_next"
+        }, {
+            "caption": "Toggle Debug",
+            "command": "vulhint_debug"
+        }, {
+            "caption": "Toggle Enable",
+            "command": "vulhint_enable"
+        }, {
+            "caption": "Clear",
+            "command": "vulhint_clear"
+        }]
+    }]
+}]

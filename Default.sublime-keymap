@@ -1,3 +1,7 @@
-[
-    { "keys": ["alt+space"], "command": "vulhint_goto_next" }
-]
+[{
+    "keys": ["alt+space"],
+    "command": "vulhint_goto_next"
+}, {
+    "keys": ["control+j"],
+    "command": "vulhint_jump_to"
+}]

@@ -2,30 +2,33 @@
 # -*- coding: utf-8 -*-
 
 __NAME__ = "VulHint"
-__VERSION__ = "0.0.1"
+__VERSION__ = "0.1.1"
 __CREATOR__ = "md5_salt"
 
 __AUTHOR__ = "Virink"
-__DATA__ = "VulHint.json"
+__DATA__ = "VulData.json"
 __SETTINGS__ = "VulHint.sublime-settings"
 
-__DEBUG__ = 1
-
-import sublime
-import sublime_plugin
-import re
 import time
+import re
+import os
+import sublime_plugin
+import sublime
+
+DEBUG = sublime.load_settings(__SETTINGS__).get("debug", 0) != 0
 
 g_regions = []
 g_region_lines = []
 g_jump_index = 0
 g_line_regions = {}
+rulesData = sublime.load_settings(__DATA__)
 
 
 def debug_print(var):
-    if __DEBUG__:
-        print("===== DEBUG VulHint : %s===== " % str(time.time()))
+    if DEBUG:
+        print("====== DEBUG VulHint : ====== ")
         print(var)
+        print("=============================")
 
 
 class Vulhint(sublime_plugin.EventListener):
@@ -55,9 +58,10 @@ class Vulhint(sublime_plugin.EventListener):
         clear_mark(view)
         g_regions = []
         self.lang = self.guess_lang(view)
-        self.data = sublime.load_settings("VulData.json").get(self.lang, {})
+        if self.lang in ['html', 'htm']:
+            self.lang = 'js'
+        self.data = rulesData.get(self.lang, {})
         debug_print("Language : " + self.lang)
-        # debug_print(self.data)
 
     def on_load_async(self, view):
         debug_print('on_post_save_async')
@@ -87,10 +91,7 @@ class Vulhint(sublime_plugin.EventListener):
 
         if not self.lang or not self.data:
             return
-        # self.init(view)
-        # locate smiles in the string. smiles string should be at the beginning and followed by tab (cxsmiles)
-        # hovered_line_text = view.substr(view.word(point)).strip()
-        #hovered_line_text = view.substr(view.line(point)).strip()
+
         if (hover_zone == sublime.HOVER_TEXT):
             word = view.substr(view.word(point)).strip()
             debug_print(word)
@@ -116,6 +117,7 @@ class Vulhint(sublime_plugin.EventListener):
         return
 
     def mark_vul(self, view):
+        debug_print('mark_vul')
         global g_regions
         if not self.lang or not self.data:
             return
@@ -135,8 +137,8 @@ class Vulhint(sublime_plugin.EventListener):
             if not vul:
                 continue
             # 移除标志过的
-            vul = [
-                v for v in vul if '/*vvv*/' not in view.substr(view.line(v))]
+            # vul = [
+            #     v for v in vul if '/*vvv*/' not in view.substr(view.line(v))]
             # TODO 二次判断
             # if pattern_2:
             #     _vul = re.findall(pattern_2, vul_str, flags=re.IGNORECASE)
@@ -162,6 +164,15 @@ class Vulhint(sublime_plugin.EventListener):
             return None
         filename = view.file_name()
         return filename.split('.')[-1].lower()
+
+    def on_pre_close(self, view):
+        debug_print('on_pre_close')
+
+    def on_close(self, view):
+        debug_print('on_close')
+
+    def on_activated(self, view):
+        debug_print('on_activated')
 
 
 def clear_mark(view):
@@ -214,6 +225,26 @@ class VulhintGotoNextCommand(sublime_plugin.TextCommand):
         self.view.show(pt)
 
 
+class VulhintJumpToCommand(sublime_plugin.TextCommand):
+    """JumpTo VulHint Command
+    """
+
+    def run(self, edit):
+        view = self.view
+        current_point = view.sel()[0].a
+        debug_print(current_point)
+        line = ''
+        while current_point > 0:
+            current_point -= 1
+            line = view.substr(view.line(current_point))
+            if '[+]' in line:
+                debug_print(line)
+                break
+        m = re.findall(r'\[\+\] (.*?):(\d+)', line)
+        view.window().open_file("%s:%s" %
+                                (m[0][0], m[0][1]), sublime.ENCODED_POSITION)
+
+
 class VulhintEnableCommand(sublime_plugin.TextCommand):
     """Enable VulHint Command
 
@@ -224,7 +255,7 @@ class VulhintEnableCommand(sublime_plugin.TextCommand):
     """
 
     def run(self, edit):
-        debug_print('Vulhint Disable Command')
+        debug_print('Vulhint Enable/Disable Command')
         setting = sublime.load_settings(__SETTINGS__)
         status = int(setting.get("enable", 0))
         if status:
@@ -232,6 +263,27 @@ class VulhintEnableCommand(sublime_plugin.TextCommand):
         else:
             debug_print('Enable Vulhint')
         setting.set("enable", (status + 1) % 2)
+        sublime.save_settings(__SETTINGS__)
+
+
+class VulhintDebugCommand(sublime_plugin.TextCommand):
+    """VulHint Debug Command
+
+    开启/关闭 Debug
+
+    Extends:
+        sublime_plugin.TextCommand
+    """
+
+    def run(self, edit):
+        debug_print('Vulhint Debug Command')
+        setting = sublime.load_settings(__SETTINGS__)
+        status = int(setting.get("debug", 0))
+        if status:
+            debug_print('Disbale Debug')
+        else:
+            debug_print('Enable Debug')
+        setting.set("debug", (status + 1) % 2)
         sublime.save_settings(__SETTINGS__)
 
 
@@ -247,3 +299,91 @@ class VulhintClearCommand(sublime_plugin.TextCommand):
     def run(self, edit):
         debug_print('Vulhint Clear Command')
         clear_mark(self.view)
+
+
+class VulhintFindVulCommand(sublime_plugin.TextCommand):
+    """Find Vul Command
+
+    搜索漏洞
+
+    Extends:
+        sublime_plugin.TextCommand
+    """
+    _ext = False
+    _lang = False
+
+    def walk(self, path):
+        all_files = []
+        for root, dirs, files in os.walk(path):
+            for f in files:
+                if not self._ext or os.path.splitext(f)[1] in self._ext:
+                    all_files.append(os.path.join(root, f))
+        return all_files
+
+    def findVuls(self, files, lang):
+        if not lang:
+            return
+        rules = rulesData.get(lang, {})
+        results = []
+        for f in files:
+            with open(f, 'r', encoding='utf-8') as fp:
+                lines = fp.readlines()
+                linesLen = len(lines)
+                for r in rules:
+                    num = -1
+                    for line in lines:
+                        num += 1
+                        start = 0 if num < 3 else num - 3
+                        end = num+4 if num+4 <= linesLen else linesLen
+                        if re.findall(rules[r]['pattern'], line, re.I):
+                            results.append("[+] %s:%d" % (f, num))
+                            results.append("[*]" + rules[r]['discription'])
+                            for i in range(start, end):
+                                results.append(
+                                    ("%d: \t%s" % (i, lines[i])).strip())
+                            results.append("")
+        return '\n'.join(results)
+
+    def run(self, edit):
+        debug_print('Vulhint Find Vul Command')
+        w = self.view.window()
+        extract_variables = w.extract_variables()
+        project_path = extract_variables['folder']
+        # debug_print(extract_variables)
+        debug_print("[+] Project: "+project_path)
+        files = self.walk(project_path)
+        vuls_results = self.findVuls(files, self._lang)
+        debug_print(vuls_results)
+        results_view = w.new_file()
+        results_view.set_name("Vuls Results")
+        results_view.insert(edit, 0, vuls_results)
+        results_view.set_read_only(True)
+        w.focus_view(results_view)
+
+
+class VulhintFindVulPhpCommand(VulhintFindVulCommand):
+    """Find Vul of PHP
+    """
+    _ext = ['.php']
+    _lang = 'php'
+
+
+# class VulhintFindVulJavaCommand(VulhintFindVulCommand):
+#     """Find Vul of Java
+#     """
+#     _ext = ['.java', '.jsp']
+#     _lang = 'java'
+
+
+class VulhintFindVulPyCommand(VulhintFindVulCommand):
+    """Find Vul of Python
+    """
+    _ext = ['.py']
+    _lang = 'py'
+
+
+class VulhintFindVulJsCommand(VulhintFindVulCommand):
+    """Find Vul of Python
+    """
+    _ext = ['.js', 'htm', 'html']
+    _lang = 'js'

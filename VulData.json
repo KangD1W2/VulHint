@@ -1,4 +1,3 @@
-// author: md5_salt
 /*
 	"rule_name": {"keyword":[], "discription": "test", "pattern": "regexp", "abais":0, "bbias":0, "enable":1}
 	keyword 鼠标悬浮位置
@@ -8,18 +7,15 @@
 */
 
 {
-	"php":{
-        // ===============================
-        //      Virink
-        // ===============================
-        "include":{
-            "keyword": ["include", "include_once","require","require_once"],
+    "php": {
+        "include": {
+            "keyword": ["include", "include_once", "require", "require_once"],
             "discription": "文件包含漏洞",
             "pattern": "\\b(include|require)(_once)?(\\s{1,5}|\\s{0,5}\\().{0,60}\\$(?!.*(this->))\\w{1,20}((\\[[\\\"']|\\[)\\${0,1}[\\w\\[\\]\\\"']{0,30})?",
             "enable": 1
         },
-        "include_gpc":{
-            "keyword": ["include", "include_once","require","require_once"],
+        "include_gpc": {
+            "keyword": ["include", "include_once", "require", "require_once"],
             "discription": "文件包含漏洞-GPCS",
             "pattern": "\\b(include|require)(_once)?[ |\\(|\\{|\\\"]*\\$_(GET|POST|REQUEST|COOKIE)+\\[.*?\\]",
             "enable": 1
@@ -30,193 +26,291 @@
         //     "pattern": "\\b(select|insert|from|where)+.*?=[\\s\\w]*([^\\'][\\$]+\\w{1,20}[^\\'])",
         //     "enable": 1
         // },
-        "sqlinject_fuck":{
-            "keyword": ["mysql_query", "mysqli_query","select","where"],
+        "sqlinject_fuck": {
+            "keyword": ["mysql_query", "mysqli_query", "select", "where"],
             "discription": "可能存在注入",
             "pattern": "\\b(select|insert|from|where)+.*?\\$\\w{1,20}.*?",
             "enable": 1
         },
-        "sqlinject_info":{
-            "keyword": ["mysql_error", "mysqli_error","print","echo"],
+        "sqlinject_info": {
+            "keyword": ["mysql_error", "mysqli_error", "print", "echo"],
             "discription": "SQL输出报错信息",
             "pattern": "\\b(print|echo|var_dump|die|exit)(_r)?.*?\\b(mysql_error|mysqli_error)\\(\\)",
             "enable": 1
         },
-        "control_input":{
-            "keyword": ["_GET", "_POST","_COOKIE","_REQUIRE"],
-            "discription": "->可控输入点<-",
+        "control_input": {
+            "keyword": ["_GET", "_POST", "_COOKIE", "_REQUIRE"],
+            "discription": "可控输入点",
             "pattern": "\\b(_GET|_POST|_COOKIE|_REQUIRE)",
             "enable": 1
         },
-        "xff":{
-            "keyword": ["HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR","HTTP_REFERER","QUERY_STRING"],
+        "xff": {
+            "keyword": ["HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR", "HTTP_REFERER", "QUERY_STRING"],
             "discription": "->XFF, Maybe SQL Inject or XSS<-",
             "pattern": "\\$\\b(_SERVER)\\[[\\\"\\']\\b(HTTP_CLIENT_IP|HTTP_X_FORWARDED_FOR|HTTP_REFERER|QUERY_STRING)[\\\"|\\']\\]",
             "enable": 1
         },
-        "header_location":{
+        "header_location": {
             "keyword": ["header", "location"],
             "discription": "跳转有无 exit or die ?",
             "pattern": "\\b(header)\\(.*?\\b(Location).*",
             "enable": 1
         },
-        "mysql_charset":{
+        "mysql_charset": {
             "keyword": ["header", "location"],
             "discription": "MySQL 数据库 字符集",
             "pattern": "_query\\(.*?[\\\"|\\'].*?set.*?names",
             "enable": 1
         },
-        "file_afr":{
+        "file_afr": {
             "keyword": ["file_get_contents", "fopen", "readfile", "fgets", "fread", "parse_ini_file", "highlight_file", "fgetss", "show_source"],
             "discription": "任意文件读取",
             // "pattern": "\\b(file_get_contents|show_source|include)\\s{0,10}\\(.{0,40}\\$\\w{1,20}((\\[[\"']|\\[)\\${0,1}[\\w\\[\\]\"']{0,30}){1}",
-            "pattern":"\\b(file_get_contents|fopen|readfile|fgets|fread|parse_ini_file|highlight_file|fgetss|show_source)\\s{0,5}\\(.{0,40}\\$\\w{1,15}((\\[[\\\"']|\\[)\\$?[\\w\\[\\]\\\"']{0,30})?",
+            "pattern": "\\b(file_get_contents|fopen|readfile|fgets|fread|parse_ini_file|highlight_file|fgetss|show_source)\\s{0,5}\\(.{0,40}\\$\\w{1,15}((\\[[\\\"']|\\[)\\$?[\\w\\[\\]\\\"']{0,30})?",
             "enable": 1
         },
         "str_replace_more": {
-            "keyword": ["str_replace","str_ireplace"],
+            "keyword": ["str_replace", "str_ireplace"],
             "discription": "多次出现绕过",
             "pattern": "\\b(str_replace|str_ireplace)\\(.*?,.*?\\\"\\\",.*?\\$\\w{1,20}.*?\\)",
             "enable": 1
         },
-		"preg_replace": {
-			"keyword": ["preg_replace","preg_replace_all"],
-			"discription": "preg_replace的/e模式代码执行",
-			"pattern": "\\b(preg_replace)(_all)?\\(\\s{0,5}.*/[is]{0,2}e[is]{0,2}[\\\"']\\s{0,5},(.*\\$.*,|.*,.*\\$)",
-			"enable": 1
-		},
-        "phpinfo":{
+        "preg_replace": {
+            "keyword": ["preg_replace", "preg_replace_all"],
+            "discription": "preg_replace的/e模式代码执行",
+            "pattern": "\\b(preg_replace)(_all)?\\(\\s{0,5}.*/[is]{0,2}e[is]{0,2}[\\\"']\\s{0,5},(.*\\$.*,|.*,.*\\$)",
+            "enable": 1
+        },
+        "phpinfo": {
             "keyword": ["phpinfo"],
             "discription": "敏感信息泄露",
             "pattern": "\\b(phpinfo)\\s{0,5}\\(\\s{0,5}\\)",
             "enable": 1
         },
-		"backdoor":{
-			"keyword": ["POST","GET","REQUEST","SERVER","$"],
-			"discription": "代码执行?后门",
-			"pattern": "\\$\\w{1,30}((\\[[\\\"']|\\[)\\$?[\\w\\[\\]\\\"']{0,30})?\\s{0,5}\\(\\s{0,5}\\$_(POST|GET|REQUEST|SERVER)\\[.{1,40}\\]",
-			"enable": 1
-		},
+        "backdoor": {
+            "keyword": ["POST", "GET", "REQUEST", "SERVER", "$"],
+            "discription": "代码执行?后门",
+            "pattern": "\\$\\w{1,30}((\\[[\\\"']|\\[)\\$?[\\w\\[\\]\\\"']{0,30})?\\s{0,5}\\(\\s{0,5}\\$_(POST|GET|REQUEST|SERVER)\\[.{1,40}\\]",
+            "enable": 1
+        },
+        "addslashes": {
+            "keyword": ["addslashes"],
+            "discription": "转义,在预定义字符<br>(',\",\\,\\0)<br>之前添加反斜杠",
+            "pattern": "\\b(addslashes)\\s{0,5}\\(",
+            "enable": 1
+        },
         // ===============================
         //      md5_salt
         // ===============================
-		// "weak_equal": {
-		// 	"keyword": ["=="],
-		// 	"discription": "弱类型比较",
-		// 	"pattern": "[^=!]==[^=]",
-		// 	"enable": 0
-		// },
+        // "weak_equal": {
+        // 	"keyword": ["=="],
+        // 	"discription": "弱类型比较",
+        // 	"pattern": "[^=!]==[^=]",
+        // 	"enable": 0
+        // },
         // ===============================
         //      waiting
         // ===============================
-        "file_operation":{
+        "file_operation": {
             "keyword": ["unlink", "copy", "fwrite", "file_put_contents", "bzopen"],
             "discription": "跨目录，是否存在条件竞争，windows下通配符、NTFS流",
             "pattern": "\\b(unlink|copy|fwrite|file_put_contents|bzopen)\\s{0,10}\\(.{0,40}\\$\\w{1,20}((\\[[\"']|\\[)\\${0,1}[\\w\\[\\]\"']{0,30}){0,1}",
             "enable": 1
         },
-		"extract": {
-			"keyword": ["extract"],
-			"discription": "extract默认覆盖已有变量",
-			"pattern": "\\b(extract)\\s{0,5}\\(.{0,30}\\$\\w{1,20}((\\[[\"']|\\[)\\${0,1}[\\w\\[\\]\"']{0,30}){0,1}\\s{0,5},{0,1}\\s{0,5}(EXTR_OVERWRITE){0,1}\\s{0,5}\\)",
-			"enable": 1
-		},
-		"parse_str": {
-			"keyword": ["parse_str"],
-			"discription": "parse_str对字符串进行一次url解码，同名变量覆盖前面的",
-			"pattern": "\\b(mb_){0,1}parse_str\\s{0,10}\\(.{0,40}\\$\\w{1,20}((\\[[\"']|\\[)\\${0,1}[\\w\\[\\]\"']{0,30}){0,1}",
-			"enable": 1
-		},
-		"parse_url": {
-			"keyword": ["parse_url"],
-			"discription": "<ul><li>可能返回null</li><li>与浏览器不一致http://a.com\\@5alt.me</li><li>与curl不一致http://x:x@a.com:80@5alt.me</li></ul>",
-			"pattern": "\\b(parse_url)\\(",
-			"enable": 1
-		},
-		"class_dynamic_call": {
-			"keyword": ["->$"],
-			"discription": "动态调用",
-			"pattern": "->\\$",
-			"enable": 1
-		},
-		"preg_match": {
-			"keyword": ["preg_match", "preg_match_all"],
-			"discription": "是否有起始和结束标记，在m的情况下.不匹配换行%0a绕过",
-			"pattern": "\\b(preg_match|preg_match_all)\\(",
-			"enable": 1
-		},
-		"in_array": {
-			"keyword": ["in_array"],
-			"discription": "是否非严格模式比较",
-			"pattern": "\\b(in_array)\\(",
-			"enable": 1
-		},
-		"unserialize": {
-			"keyword": ["unserialize"],
-			"discription": "是否完全可控，用UAF打",
-			"pattern": "\\b(unserialize)\\(",
-			"enable": 1
-		},
-		// "str_replace": {
+        "extract": {
+            "keyword": ["extract"],
+            "discription": "extract默认覆盖已有变量",
+            "pattern": "\\b(extract)\\s{0,5}\\(.{0,30}\\$\\w{1,20}((\\[[\"']|\\[)\\${0,1}[\\w\\[\\]\"']{0,30}){0,1}\\s{0,5},{0,1}\\s{0,5}(EXTR_OVERWRITE){0,1}\\s{0,5}\\)",
+            "enable": 1
+        },
+        "parse_str": {
+            "keyword": ["parse_str"],
+            "discription": "parse_str对字符串进行一次url解码，同名变量覆盖前面的",
+            "pattern": "\\b(mb_){0,1}parse_str\\s{0,10}\\(.{0,40}\\$\\w{1,20}((\\[[\"']|\\[)\\${0,1}[\\w\\[\\]\"']{0,30}){0,1}",
+            "enable": 1
+        },
+        "parse_url": {
+            "keyword": ["parse_url"],
+            "discription": "<ul><li>可能返回null</li><li>与浏览器不一致http://a.com\\@5alt.me</li><li>与curl不一致http://x:x@a.com:80@5alt.me</li></ul>",
+            "pattern": "\\b(parse_url)\\(",
+            "enable": 1
+        },
+        "class_dynamic_call": {
+            "keyword": ["->$"],
+            "discription": "动态调用",
+            "pattern": "->\\$",
+            "enable": 1
+        },
+        "preg_match": {
+            "keyword": ["preg_match", "preg_match_all"],
+            "discription": "是否有起始和结束标记，在m的情况下.不匹配换行%0a绕过",
+            "pattern": "\\b(preg_match|preg_match_all)\\(",
+            "enable": 1
+        },
+        "in_array": {
+            "keyword": ["in_array"],
+            "discription": "是否非严格模式比较",
+            "pattern": "\\b(in_array)\\(",
+            "enable": 1
+        },
+        "unserialize": {
+            "keyword": ["unserialize"],
+            "discription": "是否完全可控，用UAF打",
+            "pattern": "\\b(unserialize)\\(",
+            "enable": 1
+        },
+        // "str_replace": {
         //       "keyword": ["str_replace","str_ireplace"],
         //     "discription": "多次出现绕过",
         //     "pattern": "\\b(str_replace|str_ireplace)\\(",
         //     "enable": 1
         // },
-		"urldecode": {
-			"keyword": ["urldecode"],
-			"discription": "二次url编码",
-			"pattern": "\\b(urldecode)\\(",
-			"enable": 1
-		},
-		"call_user_func": {
-			"keyword": ["call_user_func","call_user_func_array"],
-			"discription": "回调函数",
-			"pattern": "\\b(call_user_func)(_array)?\\(\\s{0,5}\\$\\w{1,15}((\\[[\\\"']|\\[)(\\$)?[\\w\\[\\]\\\"']{0,30})?",
-			"enable": 1
-		},
-		"callback": {
-			"keyword": ["uasort", "uksort", "usort", "array_diff_uassoc", "array_diff_ukey", "array_filter", "array_intersect_uassoc", "array_intersect_ukey", "array_map", "array_reduce", "array_udiff_assoc", "array_udiff_uassoc", "array_udiff_uassoc", "array_udiff", "array_uintersect_assoc", "array_uintersect_uassoc", "array_uintersect_uassoc", "array_uintersect", "array_walk_recursive", "array_walk", "preg_replace_callback"],
-			"discription": "回调函数",
-			"pattern": "\\b(uasort|uksort|usort|array_diff_uassoc|array_diff_ukey|array_filter|array_intersect_uassoc|array_intersect_ukey|array_map|array_reduce|array_udiff_assoc|array_udiff_uassoc|array_udiff_uassoc|array_udiff|array_uintersect_assoc|array_uintersect_uassoc|array_uintersect_uassoc|array_uintersect|array_walk_recursive|array_walk|preg_replace_callback)\\(",
-			"enable": 1
-		},
-		"function_dynamic_call": {
-			"keyword": [],
-			"discription": "$a()动态函数调用",
-			"pattern": "\\$\\w{1,20}((\\[[\"']|\\[)\\${0,1}[\\w\\[\\]\"']{0,30}){0,1}\\s{0,5}\\(",
-			"enable": 1
-		},
-		"double$": {
-			"keyword": [],
-			"discription": "$$可能变量覆盖",
-			"pattern": "\\${{0,1}\\$\\w{1,20}((\\[[\"']|\\[)\\${0,1}[\\w\\[\\]\"']{0,30}){0,1}\\s{0,4}=\\s{0,4}.{0,20}\\$\\w{1,20}((\\[[\"']|\\[)\\${0,1}[\\w\\[\\]\"']{0,30}){0,1}",
-			"enable": 1
-		},
-		"system":{
-			"keyword": ["system", "passthru", "pcntl_exec", "shell_exec", "escapeshellcmd", "exec"],
-			"discription": "命令执行",
-			"pattern": "\\b(system|passthru|pcntl_exec|shell_exec|escapeshellcmd|exec)\\s{0,10}\\(.{0,40}\\$\\w{1,20}((\\[[\"']|\\[)\\${0,1}[\\w\\[\\]\"']{0,30}){0,1}",
-			"enable": 1
-		},
-		"rand":{
-			"keyword": ["rand", "mt_rand"],
-			"discription": "随机数预测",
-			"pattern": "\\b(rand|mt_rand|srand|mt_srand)\\(",
-			"enable": 1
-		}
-	},
-    "py":{
-        "render_template":{
+        "urldecode": {
+            "keyword": ["urldecode"],
+            "discription": "二次url编码",
+            "pattern": "\\b(urldecode)\\(",
+            "enable": 1
+        },
+        "call_user_func": {
+            "keyword": ["call_user_func", "call_user_func_array"],
+            "discription": "回调函数",
+            "pattern": "\\b(call_user_func)(_array)?\\(\\s{0,5}\\$\\w{1,15}((\\[[\\\"']|\\[)(\\$)?[\\w\\[\\]\\\"']{0,30})?",
+            "enable": 1
+        },
+        "callback": {
+            "keyword": ["uasort", "uksort", "usort", "array_diff_uassoc", "array_diff_ukey", "array_filter", "array_intersect_uassoc", "array_intersect_ukey", "array_map", "array_reduce", "array_udiff_assoc", "array_udiff_uassoc", "array_udiff_uassoc", "array_udiff", "array_uintersect_assoc", "array_uintersect_uassoc", "array_uintersect_uassoc", "array_uintersect", "array_walk_recursive", "array_walk", "preg_replace_callback"],
+            "discription": "回调函数",
+            "pattern": "\\b(uasort|uksort|usort|array_diff_uassoc|array_diff_ukey|array_filter|array_intersect_uassoc|array_intersect_ukey|array_map|array_reduce|array_udiff_assoc|array_udiff_uassoc|array_udiff_uassoc|array_udiff|array_uintersect_assoc|array_uintersect_uassoc|array_uintersect_uassoc|array_uintersect|array_walk_recursive|array_walk|preg_replace_callback)\\(",
+            "enable": 1
+        },
+        "function_dynamic_call": {
+            "keyword": [],
+            "discription": "$a()动态函数调用",
+            "pattern": "\\$\\w{1,20}((\\[[\"']|\\[)\\${0,1}[\\w\\[\\]\"']{0,30}){0,1}\\s{0,5}\\(",
+            "enable": 1
+        },
+        "double$": {
+            "keyword": [],
+            "discription": "$$可能变量覆盖",
+            "pattern": "\\${{0,1}\\$\\w{1,20}((\\[[\"']|\\[)\\${0,1}[\\w\\[\\]\"']{0,30}){0,1}\\s{0,4}=\\s{0,4}.{0,20}\\$\\w{1,20}((\\[[\"']|\\[)\\${0,1}[\\w\\[\\]\"']{0,30}){0,1}",
+            "enable": 1
+        },
+        "system": {
+            "keyword": ["system", "passthru", "pcntl_exec", "shell_exec", "escapeshellcmd", "exec"],
+            "discription": "命令执行",
+            "pattern": "\\b(system|passthru|pcntl_exec|shell_exec|escapeshellcmd|exec)\\s{0,10}\\(.{0,40}\\$\\w{1,20}((\\[[\"']|\\[)\\${0,1}[\\w\\[\\]\"']{0,30}){0,1}",
+            "enable": 1
+        },
+        "rand": {
+            "keyword": ["rand", "mt_rand"],
+            "discription": "随机数预测",
+            "pattern": "\\b(rand|mt_rand|srand|mt_srand)\\(",
+            "enable": 1
+        },
+        "iconv": {
+            "keyword": ["iconv"],
+            "discription": "字符串编码转换，字符串截断问题，宽字节问题，Unicode替换问题",
+            "pattern": "\\b(iconv)\\(",
+            "enable": 1
+        },
+        "json_decode": {
+            "keyword": ["json_decode"],
+            "discription": "json解码，可能存在弱类型比较问题",
+            "pattern": "\\b(json_decode)\\(",
+            "enable": 1
+        }
+    },
+    "py": {
+        "render_template": {
             "keyword": ["render_template_string", "render_template"],
             "discription": "SSTI",
             "pattern": "\\b(render_template)(_string)?\\(",
             "enable": 1
         },
-        "format":{
+        "format": {
             "keyword": ["format"],
             "discription": "字符串格式化",
             "pattern": "\\b(format)\\(",
+            "enable": 1
+        },
+        "flask.request": {
+            "keyword": ["flask.request"],
+            "discription": "flask请求",
+            "pattern": "\\b(flask\\.request)",
+            "enable": 1
+        },
+        "eval": {
+            "keyword": ["eval"],
+            "discription": "任意代码执行",
+            "pattern": "\\b(eval)\\(",
+            "enable": 1
+        }
+    },
+    "js": {
+        "window.addEventListener": {
+            "keyword": ["addEventListener"],
+            "discription": "监听message事件",
+            "pattern": "\\b(addEventListener)\\s{0,10}\\(['\"]\\b(message)['\"]",
+            "enable": 1
+        },
+        "chrome.runtime.onMessage": {
+            "keyword": ["onMessage"],
+            "discription": "插件onMessage",
+            "pattern": "\\b(chrome\\.runtime\\.onMessage)",
+            "enable": 1
+        },
+        "chrome.runtime.onMessageExternal": {
+            "keyword": ["onMessageExternal"],
+            "discription": "插件接收外部消息onMessageExternal",
+            "pattern": "\\b(chrome\\.runtime\\.onMessageExternal)",
+            "enable": 1
+        },
+        "chrome.runtime.onConnectExternal": {
+            "keyword": ["onConnectExternal"],
+            "discription": "插件接收外部连接onConnectExternal",
+            "pattern": "\\b(chrome\\.runtime\\.onConnectExternal)",
+            "enable": 1
+        },
+        "location": {
+            "keyword": ["location"],
+            "discription": "location操作",
+            "pattern": "\\b(location)[\\.\\s=]",
+            "enable": 1
+        },
+        "innerHTML": {
+            "keyword": ["innerHTML"],
+            "discription": "innerHTML操作",
+            "pattern": "\\.innerHTML",
+            "enable": 1
+        },
+        "html": {
+            "keyword": ["html"],
+            "discription": "jQuery .html() 操作",
+            "pattern": "\\.html\\s{0,10}\\(\\s{0,10}[^)]",
+            "enable": 1
+        },
+        "document.write": {
+            "keyword": ["write"],
+            "discription": "document.write",
+            "pattern": "\\b(document\\.write)\\s{0,10}\\(",
+            "enable": 1
+        },
+        "eval": {
+            "keyword": ["eval"],
+            "discription": "eval",
+            "pattern": "\\b(eval)\\s{0,10}\\(",
+            "enable": 1
+        },
+        "setTimeout": {
+            "keyword": ["setTimeout"],
+            "discription": "setTimeout第一个参数是字符串",
+            "pattern": "\\b(setTimeout)\\s{0,10}\\(\\s{0,10}['\"]",
+            "enable": 1
+        },
+        "setInterval": {
+            "keyword": ["setInterval"],
+            "discription": "setInterval第一个参数是字符串",
+            "pattern": "\\b(setInterval)\\s{0,10}\\(\\s{0,10}['\"]",
             "enable": 1
         }
     }

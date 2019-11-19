@@ -14,5 +14,9 @@
     {
         "keys": ["control+c"],
         "command": "vulhint_clear" 
+    },
+    {
+        "keys": ["control+j"],
+        "command": "vulhint_jump_to" 
     }
 ]
